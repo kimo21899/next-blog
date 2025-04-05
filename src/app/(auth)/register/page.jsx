@@ -15,21 +15,21 @@ export default function Register() {
       <form action={action} className="space-y-4">
         <div>
           <label htmlFor="name">Name</label>
-          <input type="text" name="name" defaultValue={state?.name} />
+          <input type="text" name="name" defaultValue={state?.name} required />
           {state?.errors?.name && (
             <p className="error">{state.errors.name}</p>
           )}
         </div>
         <div>
           <label htmlFor="email">Email</label>
-          <input type="text" name="email" defaultValue={state?.email} />
+          <input type="text" name="email" defaultValue={state?.email} required />
           {state?.errors?.email && (
             <p className="error">{state.errors.email}</p>
           )}
         </div>
         <div>
           <label htmlFor="password">Password</label>
-          <input type="password" name="password" />
+          <input type="password" name="password" required />
           {state?.errors?.password && (
             <div className="error">
               <p>Password must:</p>
@@ -43,7 +43,7 @@ export default function Register() {
         </div>
         <div>
           <label htmlFor="confirmPassword">Confirm Password</label>
-          <input type="password" name="confirmPassword" />
+          <input type="password" name="confirmPassword" required />
           {state?.errors?.confirmPassword && (
             <p className="error">{state.errors.confirmPassword}</p>
           )}
@@ -54,7 +54,7 @@ export default function Register() {
           </button>          
         </div>
         <div className="flex items-center justify-center gap-4">
-            <Link href="/" className="text-link">
+            <Link href="/login" className="text-link">
               already have an account? login
             </Link>
           </div>

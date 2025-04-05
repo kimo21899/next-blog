@@ -28,3 +28,14 @@ export const RegisterFormSchema = z
       });
     }
   });
+
+
+// 로그인시 이메일, 비밀번호를 검사합니다.
+export const LoginFormSchema = z
+.object({
+  email: z.string().email({ message: "Please enter a valid email." }).trim(),
+  password: z
+    .string()
+    .min(1, { message: "Not be empty" })
+    .trim()
+});

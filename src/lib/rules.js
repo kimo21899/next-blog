@@ -39,3 +39,16 @@ export const LoginFormSchema = z
     .min(1, { message: "Not be empty" })
     .trim()
 });
+
+// 블로그 등록 폼 검사합니다.
+export const BlogPostSchema = z
+.object({
+  title: z
+    .string()
+    .min(1, { message: "Title field is required." })
+    .max(100, { message: "Title can't be more than 100 characters." })
+    .trim(),
+  content: 
+    z.string()
+    .min(1, { message: "Content field is required." }).trim(),
+});

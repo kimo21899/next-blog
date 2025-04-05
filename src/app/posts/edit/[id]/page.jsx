@@ -30,7 +30,6 @@ export default async function EditPost({params}) {
   return (
     <div className="container w-1/2">
       <h1 className="title">Edit your post</h1>
-
       {post? <BlogForm post={post} handler={updatePost} /> : <p>Failed to fetch the data from database.</p>}
     </div>
   )

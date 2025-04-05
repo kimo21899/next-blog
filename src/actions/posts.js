@@ -4,13 +4,14 @@ import { getCollection } from "@/lib/db";
 import getAuthUser from "@/lib/getAuthUser";
 import { BlogPostSchema } from "@/lib/rules";
 import { ObjectId } from "mongodb";
+import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
 // 블로그 글등록 액션정의
 export async function createPost(state, formData) {
   // 로그인 여부
-  const authUser = await getAuthUser();
-  if (!authUser) redirect("/login");
+  const user = await getAuthUser();
+  if (!user) redirect("/login");
 
   const title = formData.get("title");
   const content = formData.get("content");
@@ -43,20 +44,20 @@ export async function createPost(state, formData) {
     await postsCollection.insertOne({    
       title: validatedFields.data.title,
       content: validatedFields.data.content,
-      userId: ObjectId.createFromHexString(authUser.userId)     
+      userId: ObjectId.createFromHexString(user.userId)     
     });
   } catch (error) {
     return { errors: { title: error.message } };
   }
-  // 글 작성 후, Home으로 리다이렉트합니다.
-  redirect("/");
+  // 글 작성 후, Dashboard 리다이렉트합니다.
+  redirect("/dashboard");
 }
 
 // 블로그 글수정 액션정의
 export async function updatePost(state, formData) {
   // 로그인 여부
-  const authUser = await getAuthUser();
-  if (!authUser) redirect("/login");
+  const user = await getAuthUser();
+  if (!user) redirect("/login");
 
   const postId = formData.get("postId");
   const title = formData.get("title");
@@ -85,7 +86,7 @@ export async function updatePost(state, formData) {
   });
 
   // 작성자와 로그인 한 사람이 다르면, 홈으로 리다이렉트합니다.
-  if (authUser.userId !== post.userId.toString()) return redirect("/");
+  if (user.userId !== post.userId.toString()) return redirect("/");
 
   // Save to DB
   postsCollection.findOneAndUpdate(
@@ -97,6 +98,31 @@ export async function updatePost(state, formData) {
       },
     }
   );
-  // 글 작성 후, Home으로 리다이렉트합니다.
-  redirect("/");
+  // 글 작성 후 Dashboard으로 리다이렉트합니다.
+  redirect("/dashboard");
+}
+
+
+// 블로그 글삭제 액션정의
+export async function deletePost(formData) {
+  // 로그인 여부
+  const user = await getAuthUser();
+  if (!user) redirect("/login");
+
+  // Find postId in DB
+  const postId = formData.get("postId");
+  const postsCollection = await getCollection("posts");
+  const post = await postsCollection.findOne({
+    _id: ObjectId.createFromHexString(postId)
+  });
+
+  // 작성자와 로그인 한 사람이 다르면, 홈으로 리다이렉트합니다.
+  if (user.userId !== post.userId.toString()) return redirect("/");
+
+  // Save to DB
+  postsCollection.findOneAndDelete({ _id: post._id });
+
+  // 글 삭제 후 Dashboard으로 리다이렉트합니다.
+  // redirect("/dashboard");
+  revalidatePath("/dashboad");
 }
